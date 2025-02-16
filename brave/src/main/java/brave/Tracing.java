@@ -343,7 +343,7 @@ public abstract class Tracing implements Closeable {
   }
 
   static final class LogSpanHandler extends SpanHandler {
-    final Logger logger = Logger.getLogger(Tracer.class.getName());
+    final Logger logger = Logger.getLogger(LogSpanHandler.class.getName());
 
     @Override public boolean end(TraceContext context, MutableSpan span, Cause cause) {
       if (!logger.isLoggable(Level.INFO)) return false;
