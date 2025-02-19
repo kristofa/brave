@@ -43,15 +43,19 @@ public class HttpClient5Tracing {
     return new HttpClient5Tracing(httpTracing);
   }
 
+  public HttpClientBuilder addTracingToBuilder(HttpClientBuilder builder) {
+      if (builder == null) throw new NullPointerException("HttpClientBuilder == null");
+      builder.addExecInterceptorBefore(ChainElement.MAIN_TRANSPORT.name(),
+          HandleSendHandler.class.getName(),
+          new HandleSendHandler(httpTracing));
+      builder.addExecInterceptorBefore(ChainElement.PROTOCOL.name(),
+          HandleReceiveHandler.class.getName(),
+          new HandleReceiveHandler(httpTracing));
+      return builder;
+  }
+
   public CloseableHttpClient build(HttpClientBuilder builder) {
-    if (builder == null) throw new NullPointerException("HttpClientBuilder == null");
-    builder.addExecInterceptorBefore(ChainElement.MAIN_TRANSPORT.name(),
-      HandleSendHandler.class.getName(),
-      new HandleSendHandler(httpTracing));
-    builder.addExecInterceptorBefore(ChainElement.PROTOCOL.name(),
-      HandleReceiveHandler.class.getName(),
-      new HandleReceiveHandler(httpTracing));
-    return builder.build();
+    return addTracingToBuilder(builder).build();
   }
 
   public CloseableHttpAsyncClient build(HttpAsyncClientBuilder builder) {
